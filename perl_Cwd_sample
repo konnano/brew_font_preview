@@ -8,22 +8,22 @@ my $start = '.';
 $cwd = '';
 $dotdots = $start;
  do{
-  $dotdots .= '/..';
-  @pst = @cst;
+   $dotdots .= '/..';
+   @pst = @cst; ### ここのディレクトリーiノード
 
-  opendir(PARENT, $dotdots); print" dotdot=>$dotdots\n";
-   @cst = stat($dotdots);
-    if ($pst[1] == $cst[1]){
-     print" top $dir $tst[1] : $pst[1] : $cst[1]\n";
-      $dir = undef;
-    }else{
+   opendir(PARENT, $dotdots); print" dotdot=>$dotdots\n";
+    @cst = stat($dotdots); ### @cst 上のiノード ルート 2 : 2
+     if ($pst[1] == $cst[1]){
+      print" top $dir $tst[1] : $pst[1] : $cst[1]\n";
+       $dir = undef;
+     }else{
        do{ $dir = readdir(PARENT);
-       @tst = lstat("$dotdots/$dir");
-       print" dir $dir  tst => $tst[1]  pst => $pst[1]  cst => $cst[1]\n";
-      }while ($dir eq '.' || $dir eq '..' || $tst[1] != $pst[1]);
-    }
-   $cwd = (defined $dir ? "$dir" : "" ) . "/$cwd" ; print"koko $cwd\n";
-  closedir(PARENT);
+        @tst = lstat("$dotdots/$dir"); ### 上ディレクトリーのiノード
+        print" dir $dir  tst => $tst[1]  pst => $pst[1]  cst => $cst[1]\n";
+       }while ($dir eq '.' || $dir eq '..' || $tst[1] != $pst[1]);
+     }
+    $cwd = (defined $dir ? "$dir" : "" ) . "/$cwd" ; print"koko $cwd\n";
+   closedir(PARENT);
  }while (defined $dir);
   chop($cwd) unless $cwd eq '/';
    print" END $cwd\n";
