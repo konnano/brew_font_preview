@@ -8,7 +8,7 @@ my $start = '.';
 $cwd = '';
 $dotdots = $start;
  do{
-   $dotdots .= '/..';
+   $dotdots .= '/..'; ### .  /..  /.. 追加で上を検索
    @pst = @cst; ### ここのディレクトリーiノード
 
    opendir(PARENT, $dotdots); print" dotdot=>$dotdots\n";
