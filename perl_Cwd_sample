@@ -18,7 +18,7 @@ $dotdots = $start;
        $dir = undef;
      }else{
        do{ $dir = readdir(PARENT);
-        @tst = lstat("$dotdots/$dir"); ### 上ディレクトリーのiノード
+        @tst = lstat("$dotdots/$dir"); ### 上ディレクトリーの各iノード
         print" dir $dir  tst => $tst[1]  pst => $pst[1]  cst => $cst[1]\n";
        }while ($dir eq '.' || $dir eq '..' || $tst[1] != $pst[1]);
      }
