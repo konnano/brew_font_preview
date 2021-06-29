@@ -576,7 +576,7 @@ use warnings;
 use NDBM_File;
 use Fcntl ':DEFAULT';
 my( @brew,$file ); my $i = 0;
- if( `uname` eq 'Darwin' ){
+ if( `uname` eq "Darwin\n" ){
   $file = '/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula';
  }else{
   $file = '/home/linuxbrew/.linuxbrew/Homebrew/Library/Taps/homebrew/homebrew-core/Formula';
