@@ -584,7 +584,7 @@ $file = '/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula';
 }else{
 $file = '/home/linuxbrew/.linuxbrew/Homebrew/Library/Taps/homebrew/homebrew-core/Formula';
 }
-my @brew = `ls $file`;
+@brew = `ls $file`;
 
 tie my %tap,"NDBM_File","$ENV{'HOME'}/.BREW_LIST/DBM",O_RDWR|O_CREAT,0644;
  for my $name(@brew){ $name =~ s/(.+)\.rb\n/$1/;
