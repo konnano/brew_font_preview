@@ -288,30 +288,30 @@ my( $re,$mem,$dir ) = @_;
  if( $dir ){
   my $file = Dirs_1( "$re->{'CEL'}/$dir",2 );
   if( @$file ){
-if( $re->{'CAS'} or not $re->{'OS'} ){
-    $re->{'ALL'} .= " Check folder $re->{'CEL'} => $dir\n" unless $re->{'L_OPT'};
-    $re->{'EXC'} .= " Check folder $re->{'CEL'} => $dir\n" if $mem;
-}else{
-    $re->{'ALL'} .= "     Check folder $re->{'CEL'} => $dir\n" unless $re->{'L_OPT'};
-    $re->{'EXC'} .= "     Check folder $re->{'CEL'} => $dir\n" if $mem;
-}
+    if( $re->{'CAS'} or not $re->{'OS'} ){
+     $re->{'ALL'} .= " Check folder $re->{'CEL'} => $dir\n" unless $re->{'L_OPT'};
+     $re->{'EXC'} .= " Check folder $re->{'CEL'} => $dir\n" if $mem;
+    }else{
+     $re->{'ALL'} .= "     Check folder $re->{'CEL'} => $dir\n" unless $re->{'L_OPT'};
+     $re->{'EXC'} .= "     Check folder $re->{'CEL'} => $dir\n" if $mem;
+    }
    for(my $i=0;$i<@$file;$i++){
-if( $re->{'CAS'} or not $re->{'OS'} ){
-    $re->{'ALL'} .= @$file-1 == $i ? " $$file[$i]\n" : " $$file[$i]\t" unless $re->{'L_OPT'};
-    $re->{'EXC'} .= @$file-1 == $i ? " $$file[$i]\n" : " $$file[$i]\t" if $mem;
-}else{
-    $re->{'ALL'} .= @$file-1 == $i ? "    $$file[$i]\n" : "     $$file[$i]" unless $re->{'L_OPT'};
-    $re->{'EXC'} .= @$file-1 == $i ? "    $$file[$i]\n" : "     $$file[$i]" if $mem;
-}
+    if( $re->{'CAS'} or not $re->{'OS'} ){
+     $re->{'ALL'} .= @$file-1 == $i ? " $$file[$i]\n" : " $$file[$i]\t" unless $re->{'L_OPT'};
+     $re->{'EXC'} .= @$file-1 == $i ? " $$file[$i]\n" : " $$file[$i]\t" if $mem;
+    }else{
+     $re->{'ALL'} .= @$file-1 == $i ? "    $$file[$i]\n" : "     $$file[$i]" unless $re->{'L_OPT'};
+     $re->{'EXC'} .= @$file-1 == $i ? "    $$file[$i]\n" : "     $$file[$i]" if $mem;
+    }
    }
   }else{
-if( $re->{'CAS'} or not $re->{'OS'} ){
-    $re->{'ALL'} .= " Empty folder $re->{'CEL'} => $dir\n" unless $re->{'L_OPT'};
-    $re->{'EXC'} .= " Empty folder $re->{'CEL'} => $dir\n" if $mem;
-}else{
-    $re->{'ALL'} .= "     Empty folder $re->{'CEL'} => $dir\n" unless $re->{'L_OPT'};
-    $re->{'EXC'} .= "     Empty folder $re->{'CEL'} => $dir\n" if $mem;
-}
+    if( $re->{'CAS'} or not $re->{'OS'} ){
+     $re->{'ALL'} .= " Empty folder $re->{'CEL'} => $dir\n" unless $re->{'L_OPT'};
+     $re->{'EXC'} .= " Empty folder $re->{'CEL'} => $dir\n" if $mem;
+    }else{
+     $re->{'ALL'} .= "     Empty folder $re->{'CEL'} => $dir\n" unless $re->{'L_OPT'};
+     $re->{'EXC'} .= "     Empty folder $re->{'CEL'} => $dir\n" if $mem;
+    }
   }
  }else{
    $re->{'ALL'} .= $re->{'MEM'} unless $re->{'L_OPT'};
@@ -571,19 +571,16 @@ diff <(ls /usr/local/Caskroom) <(brew list --cask)
 Check Linux
 diff <(ls /home/linuxbrew/.linuxbrew/Cellar) <(brew list --formula)
 
-
-
 use strict;
 use warnings;
 use NDBM_File;
 use Fcntl ':DEFAULT';
 my( @brew,$file ); my $i = 0;
-
-if( `uname` eq 'Darwin' ){
-$file = '/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula';
-}else{
-$file = '/home/linuxbrew/.linuxbrew/Homebrew/Library/Taps/homebrew/homebrew-core/Formula';
-}
+ if( `uname` eq 'Darwin' ){
+  $file = '/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula';
+ }else{
+  $file = '/home/linuxbrew/.linuxbrew/Homebrew/Library/Taps/homebrew/homebrew-core/Formula';
+ }
 @brew = `ls $file`;
 
 tie my %tap,"NDBM_File","$ENV{'HOME'}/.BREW_LIST/DBM",O_RDWR|O_CREAT,0644;
@@ -618,4 +615,3 @@ tie my %tap,"NDBM_File","$ENV{'HOME'}/.BREW_LIST/DBM",O_RDWR|O_CREAT,0644;
  }
   untie %tap;
 __END__
-
