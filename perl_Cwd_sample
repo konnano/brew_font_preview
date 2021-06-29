@@ -453,7 +453,7 @@ my( $list,$re,$in ) = @_;
           " i  $tap\t$re->{'HASH'}{$tap}\n" : "      i  $tap\t$re->{'HASH'}{$tap}\n";
     }else{
         $re->{'MEM'} = ( $re->{'CAS'} or not $re->{'OS'} ) ?
-          " i  $tap\t$re->{'DMG'}{$tap}\n" : "      i  $tap\t$re->{'DMG'}{$tap}\n";
+          " i  $tap\t$re->{'DMG'}{$tap}\n" :  "      i  $tap\t$re->{'DMG'}{$tap}\n";
     }
      Memo_1( $re,$mem,0 );
     $re->{'AN'}++; $re->{'IN'}++;
