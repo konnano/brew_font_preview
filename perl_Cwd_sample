@@ -4,7 +4,7 @@ use warnings;
 use FindBin;
 use NDBM_File;
 use Fcntl ':DEFAULT';
- my $MAC_OS;
+ my $OS_Version;
 
 my $re  = {
  'LEN1'=>1,'FOR'=>1,'ARR'=>[],'IN'=>0,
@@ -25,12 +25,13 @@ $^O =~ /^darwin/ ? $re->{'MAC'} = $ref->{'MAC'}= 1 :
  if( $re->{'LIN'} ){
   $re->{'CEL'} = '/home/linuxbrew/.linuxbrew/Cellar';
    $re->{'BIN'} = '/home/linuxbrew/.linuxbrew/opt';
+    $OS_Version = 'Linux';
  }else{
- $MAC_OS = `sw_vers -productVersion`;
-  $MAC_OS =~ s/(\d\d.\d*)\.?\d*\n/$1/;
-   $MAC_OS =~ s/^11/11.0/;
- my $cpu = `sysctl machdep.cpu.brand_string`;
-  $MAC_OS = "${MAC_OS}M1" if $cpu =~ /Apple\s*M1/;
+ $OS_Version = `sw_vers -productVersion`;
+  $OS_Version =~ s/(\d\d.\d*)\.?\d*\n/$1/;
+   $OS_Version =~ s/^11/11.0/;
+   my $cpu = `sysctl machdep.cpu.brand_string`;
+    $OS_Version = "${OS_Version}M1" if $cpu =~ /Apple\s*M1/;
  }
 $ref->{'FDIR'} = 1 if -d '/usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask-fonts';
 $ref->{'DDIR'} = 1 if -d '/usr/local/Homebrew/Library/Taps/homebrew/homebrew-cask-drivers';
@@ -138,6 +139,7 @@ sub Linux_1{
     $list = Dirs_1( $re->{'CEL'},0,$re );
   }
   DB_1( $re );
+   DB_2( $re ) if $re->{'FOR'} and not $re->{'S_OPT'} and not $re->{'BL'};
  $re->{'COM'} ? Command_1( $re,$list ) : $re->{'BL'} ? 
   Brew_1( $re,$list ) : File_1( $re,$list );
 }
@@ -343,8 +345,8 @@ my( $list,$file,$in,$re ) = @_;
        $re->{'MEM'} = "    $brew_1\t";
      }else{
       if( $re->{'MAC'} ){
-       $re->{'MEM'} = ( $re->{'OS'}{"$brew_1$MAC_OS"} and $re->{'OS'}{"${brew_1}keg"} ) ?
-        " b k     $brew_1\t" : $re->{'OS'}{"$brew_1$MAC_OS"} ? " b       $brew_1\t" :
+       $re->{'MEM'} = ( $re->{'OS'}{"$brew_1$OS_Version"} and $re->{'OS'}{"${brew_1}keg"} ) ?
+        " b k     $brew_1\t" : $re->{'OS'}{"$brew_1$OS_Version"} ? " b       $brew_1\t" :
         $re->{'OS'}{"${brew_1}keg"} ? "   k     $brew_1\t" : "         $brew_1\t";
       }else{
        $re->{'MEM'} = ( $re->{'OS'}{"${brew_1}un_Linux"} and $re->{'OS'}{"${brew_1}keg_Linux"} ) ?
@@ -379,8 +381,8 @@ my( $list,$file,$in,$re ) = @_;
              $re->{'MEM'} =~ s/^\s{3}/(i)/;
        }else{
          if( $re->{'MAC'} ){
-           ( $re->{'OS'}{"$brew_1$MAC_OS"} and $re->{'OS'}{"${brew_1}keg"} ) ?
-            $re->{'MEM'} =~ s/^.{9}/ b k (i) / : $re->{'OS'}{"$brew_1$MAC_OS"} ?
+           ( $re->{'OS'}{"$brew_1$OS_Version"} and $re->{'OS'}{"${brew_1}keg"} ) ?
+            $re->{'MEM'} =~ s/^.{9}/ b k (i) / : $re->{'OS'}{"$brew_1$OS_Version"} ?
             $re->{'MEM'} =~ s/^.{9}/ b   (i) / : $re->{'OS'}{"${brew_1}keg"} ?
             $re->{'MEM'} =~ s/^.{9}/   k (i) / : $re->{'MEM'} =~ s/^.{9}/     (i) /;
          }else{
@@ -395,8 +397,8 @@ my( $list,$file,$in,$re ) = @_;
               $re->{'MEM'} =~ s/^\s{3}/ i /;
         }else{
           if( $re->{'MAC'} ){
-           ( $re->{'OS'}{"$brew_1$MAC_OS"} and $re->{'OS'}{"${brew_1}keg"} ) ?
-            $re->{'MEM'} =~ s/^.{9}/ b k  i  / : $re->{'OS'}{"$brew_1$MAC_OS"} ?
+           ( $re->{'OS'}{"$brew_1$OS_Version"} and $re->{'OS'}{"${brew_1}keg"} ) ?
+            $re->{'MEM'} =~ s/^.{9}/ b k  i  / : $re->{'OS'}{"$brew_1$OS_Version"} ?
             $re->{'MEM'} =~ s/^.{9}/ b    i  / : $re->{'OS'}{"${brew_1}keg"} ?
             $re->{'MEM'} =~ s/^.{9}/   k  i  / : $re->{'MEM'} =~ s/^.{9}/      i  /; 
           }else{
@@ -561,18 +563,22 @@ diff <(ls /usr/local/Caskroom) <(brew list --cask)
 Check Linux
 diff <(ls /home/linuxbrew/.linuxbrew/Cellar) <(brew list --formula)
 
-
 use strict;
 use warnings;
 use NDBM_File;
 use Fcntl ':DEFAULT';
+my( @brew,$file ); my $i = 0;
 
-my @brew=`ls /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula`;
-my $i = 0;
+if( `uname` eq 'Darwin' ){
+$file = '/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula';
+}else{
+$file = '/home/linuxbrew/.linuxbrew/Homebrew/Library/Taps/homebrew/homebrew-core/Formula';
+}
+my @brew = `ls $file`;
 
-tie my %tap,"NDBM_File",'/Users/shin/.BREW_LIST/DBM',O_RDWR|O_CREAT,0644;
+tie my %tap,"NDBM_File","$ENV{'HOME'}/.BREW_LIST/DBM",O_RDWR|O_CREAT,0644;
  for my $name(@brew){ $name =~ s/(.+)\.rb\n/$1/;
-  open my $BREW1,'<',"/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula/$name.rb" or die " Info_1 $!\n";
+  open my $BREW1,'<',"$file/$name.rb" or die " Info_1 $!\n";
    while(my $data=<$BREW1>){
     if( $data =~ /^\s*bottle\s*do.*/ ){ $i=1; next; }
      next if( $data =~ /rebuild/ and $i == 1 );
@@ -585,6 +591,7 @@ tie my %tap,"NDBM_File",'/Users/shin/.BREW_LIST/DBM',O_RDWR|O_CREAT,0644;
        $tap{"$name$data"} = 1 if $data =~ s/.*sierra.*\n/10.12/;
        $tap{"$name$data"} = 1 if $data =~ s/.*el_capitan.*\n/10.11/;
        $tap{"$name$data"} = 1 if $data =~ s/.*yosemite.*\n/10.10/;
+       $tap{"$name$data"} = 1 if $data =~ s/.*x86_64_linux.*\n/Linux/;
         if( $data =~ /.*,\s*all:.*\n/ ){
          $tap{"${name}11.0M1"} = 1;  $tap{"${name}11.0"} = 1;
          $tap{"${name}10.15"} = 1;   $tap{"${name}10.14"} = 1;
@@ -600,5 +607,5 @@ tie my %tap,"NDBM_File",'/Users/shin/.BREW_LIST/DBM',O_RDWR|O_CREAT,0644;
   close $BREW1;
  }
   untie %tap;
-
 __END__
+
