@@ -4,7 +4,7 @@ use warnings;
 use FindBin;
 use NDBM_File;
 use Fcntl ':DEFAULT';
- my $OS_Version;
+my $OS_Version;
 
 my $re  = {
  'LEN1'=>1,'FOR'=>1,'ARR'=>[],'IN'=>0,
@@ -349,8 +349,10 @@ my( $list,$file,$in,$re ) = @_;
         " b k     $brew_1\t" : $re->{'OS'}{"$brew_1$OS_Version"} ? " b       $brew_1\t" :
         $re->{'OS'}{"${brew_1}keg"} ? "   k     $brew_1\t" : "         $brew_1\t";
       }else{
-       $re->{'MEM'} = ( $re->{'OS'}{"${brew_1}un_Linux"} and $re->{'OS'}{"${brew_1}keg_Linux"} ) ?
-        " m k     $brew_1\t" : $re->{'OS'}{"${brew_1}un_Linux"} ? " m       $brew_1\t" :
+       $re->{'MEM'} = ( $re->{'OS'}{"$brew_1$OS_Version"} and $re->{'OS'}{"${brew_1}keg"} ) ?
+        " b k     $brew_1\t" : $re->{'OS'}{"$brew_1$OS_Version"} ? " b       $brew_1\t" :
+         ( $re->{'OS'}{"${brew_1}un_Linux"} and $re->{'OS'}{"${brew_1}keg_Linux"} ) ?
+        " m k     $brew_1\t" : $re->{'OS'}{"${brew_1}un_Linux"}  ? " m       $brew_1\t" :
         $re->{'OS'}{"${brew_1}keg_Linux"} ? "   k     $brew_1\t" : "         $brew_1\t";
       }
      }
@@ -386,6 +388,9 @@ my( $list,$file,$in,$re ) = @_;
             $re->{'MEM'} =~ s/^.{9}/ b   (i) / : $re->{'OS'}{"${brew_1}keg"} ?
             $re->{'MEM'} =~ s/^.{9}/   k (i) / : $re->{'MEM'} =~ s/^.{9}/     (i) /;
          }else{
+           ( $re->{'OS'}{"$brew_1$OS_Version"} and $re->{'OS'}{"${brew_1}keg"} ) ?
+            $re->{'MEM'} =~ s/^.{9}/ b k (i) / : $re->{'OS'}{"$brew_1$OS_Version"} ?
+            $re->{'MEM'} =~ s/^.{9}/ b   (i) / :
            ( $re->{'OS'}{"${brew_1}un_Linux"} and $re->{'OS'}{"${brew_1}keg_Linux"} ) ?
             $re->{'MEM'} =~ s/^.{9}/ m k (i) / : $re->{'OS'}{"${brew_1}un_Linux"} ?
             $re->{'MEM'} =~ s/^.{9}/ m   (i) / : $re->{'OS'}{"${brew_1}keg_Linux"} ?
@@ -402,6 +407,9 @@ my( $list,$file,$in,$re ) = @_;
             $re->{'MEM'} =~ s/^.{9}/ b    i  / : $re->{'OS'}{"${brew_1}keg"} ?
             $re->{'MEM'} =~ s/^.{9}/   k  i  / : $re->{'MEM'} =~ s/^.{9}/      i  /; 
           }else{
+           ( $re->{'OS'}{"$brew_1$OS_Version"} and $re->{'OS'}{"${brew_1}keg"} ) ?
+            $re->{'MEM'} =~ s/^.{9}/ b k  i  / : $re->{'OS'}{"$brew_1$OS_Version"} ?
+            $re->{'MEM'} =~ s/^.{9}/ b    i  / :
            ( $re->{'OS'}{"${brew_1}un_Linux"} and $re->{'OS'}{"${brew_1}keg_Linux"} ) ?
             $re->{'MEM'} =~ s/^.{9}/ m k  i  / : $re->{'OS'}{"${brew_1}un_linux"} ?
             $re->{'MEM'} =~ s/^.{9}/ m    i  / : $re->{'OS'}{"${brew_1}keg_Linux"} ?
@@ -562,6 +570,8 @@ diff <(ls /usr/local/Cellar) <(brew list --formula)
 diff <(ls /usr/local/Caskroom) <(brew list --cask)
 Check Linux
 diff <(ls /home/linuxbrew/.linuxbrew/Cellar) <(brew list --formula)
+
+
 
 use strict;
 use warnings;
