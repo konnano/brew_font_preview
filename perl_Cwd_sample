@@ -570,9 +570,8 @@ use NDBM_File;
 use Fcntl ':DEFAULT';
 my( @brew,$file );
 my $i = 0;
-my $OS = `uname`;
 
-if( $OS eq "Darwin\n" ){
+if( $^O eq 'darwin' ){
  $file = '/usr/local/Homebrew/Library/Taps/homebrew/homebrew-core/Formula';
 }else{
  $file = '/home/linuxbrew/.linuxbrew/Homebrew/Library/Taps/homebrew/homebrew-core/Formula';
@@ -589,7 +588,7 @@ sub dirs_1{
     }
   }
 }
-dirs_1('/usr/local/Homebrew/Library/Taps') if $OS eq "Darwin\n";
+dirs_1('/usr/local/Homebrew/Library/Taps') if $^O eq 'darwin';
 
 tie my %tap,"NDBM_File","$ENV{'HOME'}/.BREW_LIST/DBM",O_RDWR|O_CREAT,0644;
  for my $name(@brew){ $name =~ s/(.+)\.rb\n/$1/;
@@ -599,9 +598,9 @@ tie my %tap,"NDBM_File","$ENV{'HOME'}/.BREW_LIST/DBM",O_RDWR|O_CREAT,0644;
 
      if( $data =~ /^\s*bottle\s*do.*/ ){
       $i=1; next;
-     }
-      next if( $data =~ /rebuild/ and $i == 1 );
-     if( $data !~ /^\s*end/ and $i == 1 ){
+     }elsif( $data =~ /rebuild/ and $i == 1 ){
+      next;
+     }elsif( $data !~ /^\s*end/ and $i == 1 ){
        $tap{"$name$data"} = 1 if $data =~ s/.*arm64_big_sur.*\n/11.0M1/;
         $tap{"$name$data"} = 1 if $data =~ s/.*big_sur.*\n/11.0/;
        $tap{"$name$data"} = 1 if $data =~ s/.*catalina.*\n/10.15/;
@@ -618,28 +617,26 @@ tie my %tap,"NDBM_File","$ENV{'HOME'}/.BREW_LIST/DBM",O_RDWR|O_CREAT,0644;
           $tap{"${name}10.11"} = 1;   $tap{"${name}10.10"} = 1;
         }
       next;
+     }elsif( $data =~ /^\s+end/ and $i == 1 ){
+      $i = 0; next;
      }
-    if( $data =~ /^\s+end/ and $i == 1 ){ $i = 0; next;
-    }
 
     if( $data =~ /^\s*on_linux\s*do.*/ ){
      $i = 2; next;
-    }
-    if( $data !~ /^\s*end/ and $data =~ /.*keg_only.*/ and $i == 2 ){
+    }elsif( $data !~ /^\s*end/ and $data =~ /.*keg_only.*/ and $i == 2 ){
      $tap{"${name}keg_Linux"} = 1; next;
-    }
-    if( $data =~ /^\s*end/ and $i == 2 ){
+    }elsif( $data =~ /^\s*end/ and $i == 2 ){
      $i = 0; next;
     }
 
-    if( $data =~ /.*keg_only.*macos.*/ ){
-     $tap{"${name}keg"} = 1; next;
-    }
+     if( $data =~ /.*keg_only.*macos.*/ ){
+      $tap{"${name}keg"} = 1; next;
+     }
      $tap{"${name}keg_Linux"} = $tap{"${name}keg"} = 1 if $data =~ /.*keg_only.*/;
-      $tap{"${name}un_Linux"} = 1  if $data =~ /.*depends_on\s*:macos.*/;
+    $tap{"${name}un_Linux"} = 1  if $data =~ /.*depends_on\s*:macos.*/;
    }
   close $BREW1;
  }
-  untie %tap;
+untie %tap;
 __END__
 
