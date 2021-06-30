@@ -625,7 +625,6 @@ tie my %tap,"NDBM_File","$ENV{'HOME'}/.BREW_LIST/DBM",O_RDWR|O_CREAT,0644;
     if( $data =~ /^\s*on_linux\s*do.*/ ){
      $i = 2; next;
     }
-     next if( $data !~ /^\s*end/ and $i == 2 );
     if( $data !~ /^\s*end/ and $data =~ /.*keg_only.*/ and $i == 2 ){
      $tap{"${name}keg_Linux"} = 1; next;
     }
@@ -643,3 +642,4 @@ tie my %tap,"NDBM_File","$ENV{'HOME'}/.BREW_LIST/DBM",O_RDWR|O_CREAT,0644;
  }
   untie %tap;
 __END__
+
