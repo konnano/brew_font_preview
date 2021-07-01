@@ -631,9 +631,11 @@ tie my %tap,"NDBM_File","$ENV{'HOME'}/.BREW_LIST/DBM",O_RDWR|O_CREAT,0644;
 
      if( $data =~ /^\s*keg_only.*macos/ ){
       $tap{"${name}keg"} = 1; next;
+     }elsif( $data =~ /^\s*keg_only/ ){
+      $tap{"${name}keg_Linux"} = $tap{"${name}keg"} = 1; next;
+     }elsif( $data =~ /^\s*depends_on\s*:macos/ ){
+      $tap{"${name}un_Linux"} = 1; next;
      }
-     $tap{"${name}keg_Linux"} = $tap{"${name}keg"} = 1 if $data =~ /^\s*keg_only/;
-    $tap{"${name}un_Linux"} = 1  if $data =~ /^\s*depends_on\s*:macos/;
    }
   close $BREW1;
  }
