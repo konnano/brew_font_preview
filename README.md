@@ -1,1 +1,1 @@
-brew cask fonts breview
+brew cask fonts preview
