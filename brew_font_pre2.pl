@@ -42,7 +42,7 @@ die " exisit master.ttf\n" if -f 'master.ttf';
 for my $an( @AN ){
  if( -d './FONT_EXIT' ){
   rmdir './FONT_EXIT';
-   system("ps x|grep [q]uicklookd|awk 'END {print \$1}'|xargs kill -KILL");
+   system("ps x|grep [q]uicklookd|awk 'NR>1{print \$1}'|xargs kill -KILL");
     exit;
  }
   print"$an";
