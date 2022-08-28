@@ -56,7 +56,7 @@ chomp( my $an = `cat Array.txt|$fzf` );
 $HA{$an} ?
  system("curl -sLo './master.ttf' $HA{$an} 2>/dev/null
   sleep 0.1; qlmanage -p './master.ttf' >& /dev/null
-   ps x|grep [q]uicklookd|awk 'END {print \$1}'|xargs kill -KILL") :
+   ps x|grep [q]uicklookd|awk 'NR>1{print \$1}'|xargs kill -KILL") :
     unlink './Array.txt' and exit;
 unlink 'master.ttf';
  unlink 'Array.txt';
